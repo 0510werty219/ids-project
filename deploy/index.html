@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>基于深度学习的入侵检测系统 · 实时演示</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; max-width: 780px; margin: 36px auto;
+         background: #1b1d21; color: #e8e8e8; padding: 0 16px; }
+  h2 { font-weight: 500; }
+  .sub { color: #9aa0a6; font-size: 13px; margin-bottom: 14px; }
+  #stats { display: flex; gap: 12px; margin: 14px 0; }
+  .card { flex: 1; background: #26292f; border-radius: 10px; padding: 12px 14px; }
+  .card .num { font-size: 22px; font-weight: 500; }
+  .card .label { font-size: 12px; color: #9aa0a6; }
+  button { background: #185FA5; color: #fff; border: none; border-radius: 8px;
+           padding: 8px 22px; font-size: 14px; cursor: pointer; }
+  button:hover { background: #378ADD; }
+  .row { padding: 6px 10px; margin: 4px 0; border-radius: 6px; background: #26292f;
+         font-size: 13px; font-family: Consolas, monospace; }
+  .attack { background: #4a1e1e; border-left: 4px solid #E24B4A; }
+  .normal { border-left: 4px solid #639922; }
+  .wrong { opacity: 0.55; }
+</style>
+</head>
+<body>
+<h2>基于深度学习的入侵检测系统 · 实时检测演示</h2>
+<div class="sub">1D-CNN 模型 · NSL-KDD KDDTest+ 流量逐条回放 · 攻击红色告警</div>
+<div id="stats">
+  <div class="card"><div class="num" id="n-total">0</div><div class="label">已检测流量</div></div>
+  <div class="card"><div class="num" id="n-alerts" style="color:#E24B4A">0</div><div class="label">攻击告警</div></div>
+  <div class="card"><div class="num" id="n-acc">-</div><div class="label">累计准确率</div></div>
+</div>
+<button onclick="toggle()">开始 / 暂停</button>
+<div id="log" style="margin-top:14px"></div>
+<script>
+let timer = null;
+async function tick() {
+  try {
+    const r = await fetch("/next").then(r => r.json());
+    document.getElementById("n-total").textContent = r.total;
+    document.getElementById("n-alerts").textContent = r.alerts;
+    document.getElementById("n-acc").textContent = (r.accuracy_so_far * 100).toFixed(1) + "%";
+    const div = document.createElement("div");
+    div.className = "row " + r.prediction + (r.correct ? "" : " wrong");
+    div.textContent = "#" + r.id + "  判定: " + r.prediction +
+      "  置信度: " + r.confidence + "  真实: " + r.ground_truth +
+      (r.correct ? "" : "  [误判]");
+    const log = document.getElementById("log");
+    log.prepend(div);
+    if (log.children.length > 40) log.removeChild(log.lastChild);
+  } catch (e) { /* 忽略单次失败 */ }
+}
+function toggle() {
+  if (timer) { clearInterval(timer); timer = null; }
+  else { timer = setInterval(tick, 400); }
+}
+</script>
+</body>
+</html>

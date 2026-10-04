@@ -1,0 +1,8 @@
+__pycache__/
+*.log
+.ipynb_checkpoints/
+# 数据集体积较大，不入库；请按 README 说明自行下载放到 data/ 目录
+data/
+# 预处理生成的大文件，运行 work/step2_preprocess.py 即可再生成，不入库
+work/out/*.npy
+work/out/clean_*.csv

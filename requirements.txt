@@ -1,0 +1,9 @@
+# 项目依赖（Python 3.10+，全部免费开源）
+# 安装：pip install -r requirements.txt
+numpy
+pandas
+scikit-learn
+joblib
+matplotlib
+torch            # CPU 版即可；有 NVIDIA 显卡可装 CUDA 版加速训练
+python-docx      # 仅 step5_build_docx.py 生成报告时需要
